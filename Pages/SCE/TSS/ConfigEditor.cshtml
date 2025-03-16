@@ -1,0 +1,421 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+
+@model PSHome_Surface_Support_Frontend.Pages.SCE.TSS.ConfigEditor
+@{
+    ViewData["Title"] = "Configuration Editor";
+}
+
+
+<h1>Title Small Storage Configuration Editor</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Warn"] != null)
+{
+    <div class="alert alert-warning">@TempData["Warn"]</div>
+}
+
+<form method="post">
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Version: @DateTime.UtcNow.ToString("yyyy/mm/dd hh:mm:ss")</label>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Secure Content Root</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SecureContentRoot" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Screen Content Root</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.ScreenContentRoot" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Secure Lua Object Resource Root</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SecureLuaObjectResourcesRoot" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Secure Lua Scene Resource Root</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SecureLuaSceneResourcesRoot" class="form-control" />
+        </div>
+    </div>
+
+    <h3>Data Capture</h3>
+    <div class="form-group row">
+        <div class="col-sm-5">
+            <label class="col-sm-2 col-form-label">Url</label>
+            <input style="width: 575px;" asp-for="Config.DataCaptureService.Url" class="form-control" />
+        </div>
+        <div class="col-sm-8">
+            <label class="col-sm-2 col-form-label">Upload Mode</label>
+            <label class="col-sm-2 col-form-label">UploadOnSceneExit = 1</label>
+            <label class="col-sm-4 col-form-label">UploadAfterSceneLoad = 2</label>
+            <br />
+            <input style="width: 175px;" asp-for="@Model.Config.DataCaptureService.modeToEdit" class="form-control" />
+
+        </div>
+    </div>
+
+    <h3>SHA1 Files</h3>
+    @for (int i = 0; i < Model.Config.Sha1Files.Count; i++)
+    {
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">@Model.Config.Sha1Files[i].File.Split("/").Last()</label>
+            <div class="col-sm-5">
+                <input asp-for="@Model.Config.Sha1Files[i].File" class="form-control" placeholder="File Path" />
+            </div>
+            <div class="col-sm-5">
+                <input asp-for="@Model.Config.Sha1Files[i].Digest" class="form-control" placeholder="Digest" />
+            </div>
+        </div>
+    }
+
+    <h3>Scene Redirects</h3>
+    @for (int i = 0; i < Model.Config.SceneRedirects.Count; i++)
+    {
+        <div class="form-group row">
+            <label class="col-sm-1 col-form-label">Source</label>
+            <div class="col-sm-3">
+                <input asp-for="@Model.Config.SceneRedirects[i].Src" class="form-control" placeholder="Source" />
+            </div>
+            <label class="col-sm-1 col-form-label">Dest</label>
+            <div class="col-sm-3">
+                <input asp-for="@Model.Config.SceneRedirects[i].Dest" class="form-control" placeholder="Dest" />
+            </div>
+            <label class="col-sm-1 col-form-label">Region</label>
+            <div class="col-sm-2">
+                <input asp-for="@Model.Config.SceneRedirects[i].Region" class="form-control" placeholder="Region" />
+            </div>
+        </div>
+    }
+
+    <h3>Connections</h3>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">MUIS</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.Connection.muis" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Key (Default 1.83+)</label>
+        <div class="col-sm-10">
+            <div class="col-sm-6">
+                <input asp-for="override182Sharc" class="form-check-input" id="override182Sharc" />
+                <label class="form-check-label" for="override182Sharc">(Override) 1.82 Support</label>
+            </div>
+        </div>
+        <label class="col-sm-2 col-form-label">Content Server</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.Connection.contentServer" class="form-control" />
+        </div>
+    </div>
+
+    <h3>SSFW</h3>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Identity Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.identityService" class="form-control" />
+            <label class="col-sm-2 col-form-label">Time to live</label>
+            <input asp-for="Config.SSFWConnection.ttl" class="form-control" />
+            <label class="col-sm-2 col-form-label">Secret</label>
+            <input asp-for="Config.SSFWConnection.secret" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Rewards Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.rewardsService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Clan Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.clanService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">SaveData Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.saveDataService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Avatar Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.avatarService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Layout Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.layoutService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Trunks Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.trunksService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Avatar Layout Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.avatarLayoutService" class="form-control" />
+        </div>
+        <label class="col-sm-2 col-form-label">Structured Service</label>
+        <div class="col-sm-10">
+            <input asp-for="Config.SSFWConnection.structuredSaveDataService" class="form-control" />
+        </div>
+    </div>
+
+    <h3>Global Modes</h3>
+    @for (int i = 0; i < Model.Config.Global.Modes.Count; i++)
+    {
+        <div class="flex-container" style="display: flex;">
+            <input readonly="true" style="width: 275px;" asp-for="@Model.Config.Global.Modes[i].Value" class="form-control" placeholder="Value" />
+            <label class="col-sm-1">SCEA</label>
+            <input style="width: 75px;" asp-for="@Model.Config.Global.Modes[i].SCEA" class="form-control" placeholder="SCEA" />
+            <label class="col-sm-1">SCEJ</label>
+            <input style="width: 75px;" asp-for="@Model.Config.Global.Modes[i].SCEJ" class="form-control" placeholder="SCEJ" />
+            <label class="col-sm-1">SCEE</label>
+            <input style="width: 75px;" asp-for="@Model.Config.Global.Modes[i].SCEE" class="form-control" placeholder="SCEE" />
+            <label class="col-sm-1">SCEAsia</label>
+            <input style="width: 75px;" asp-for="@Model.Config.Global.Modes[i].SCEAsia" class="form-control" placeholder="SCEAsia" />
+        </div>
+    }
+
+    <h3>Region Maps</h3>
+    @for (int i = 0; i < Model.Config.RegionInfo.RegionMaps.Count; i++)
+    {
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label class="col-sm-1">Code</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionMaps[i].Code" class="form-control" placeholder="Code" />
+            </div>
+            <div class="col-sm-2">
+                <label class="col-sm-1">Loc</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionMaps[i].Loc" class="form-control" placeholder="Loc" />
+            </div>
+            <div class="col-sm-2">
+                <label class="col-sm-1">Value</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionMaps[i].Value" class="form-control" placeholder="Value" />
+            </div>
+        </div>
+    }
+
+    <h3>Region Types</h3>
+    @for (int i = 0; i < Model.Config.RegionInfo.RegionTypes.Count; i++)
+    {
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label class="col-sm-1">Name</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionTypes[i].Name" class="form-control" placeholder="Name" />
+            </div>
+            <div class="col-sm-2">
+                <label class="col-sm-1">Instance</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionTypes[i].Instance" class="form-control" placeholder="Instance" />
+            </div>
+            <div class="col-sm-2">
+                <label class="col-sm-1">Territory</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionTypes[i].Territory" class="form-control" placeholder="Territory" />
+            </div>
+            <div class="col-sm-2">
+                <label class="col-sm-1">Value</label>
+                <input asp-for="@Model.Config.RegionInfo.RegionTypes[i].Value" class="form-control" placeholder="Value" />
+            </div>
+        </div>
+    }
+
+    <h3>Region Localisations</h3>
+    @for (int i = 0; i < Model.Config.RegionInfo.RegionLocalisations.Count; i++)
+    {
+        <div class="flex-container" style="display: flex;">
+            <label class="col-sm-1">Language</label>
+            <input style="width: 100px;" asp-for="@Model.Config.RegionInfo.RegionLocalisations[i].language" class="form-control" placeholder="lang" />
+            <label class="col-sm-1">Ref</label>
+            <input style="width: 100px;" asp-for="@Model.Config.RegionInfo.RegionLocalisations[i].Value" class="form-control" placeholder="Value" />
+        </div>
+    }
+
+
+
+    <h3>HTTP Compression</h3>
+    <div class="form-group row">
+
+        <label>Enabling any of these enables compression for that file</label>
+
+        <div class="col-sm-10">
+            <input asp-for="EnableHTTPGZipCompression" class="form-check-input" id="EnableHTTPGZipCompression" />
+            <label class="form-check-label" for="EnableHTTPGZipCompression">Enable HTTP Gzip Compression</label>
+            <input asp-for="EnableHTTPDeflateCompression" class="form-check-input" id="EnableHTTPDeflateCompression" />
+            <label class="form-check-label" for="EnableHTTPDeflateCompression">Enable HTTP Deflate Compression</label>
+        </div>
+        <br />
+        <br />
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.object_catalogue" class="form-check-input" id="HTTPCompressionSubsystems.object_catalogue" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.object_catalogue">Enable Object Catalogue</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.service_ids_list" class="form-check-input" id="HTTPCompressionSubsystems.service_ids_list" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.service_ids_list">Enable Service IDs List</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.permitted_hosts_hdk" class="form-check-input" id="HTTPCompressionSubsystems.permitted_hosts_hdk" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.permitted_hosts_hdk">Enable Permitted Hosts HDK</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.config_bundle" class="form-check-input" id="HTTPCompressionSubsystems.config_bundle" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.config_bundle">Enable Config Bundle</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.scene_list" class="form-check-input" id="HTTPCompressionSubsystems.scene_list" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.scene_list">Enable Scene List</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.navigator_files" class="form-check-input" id="HTTPCompressionSubsystems.navigator_files" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.navigator_files">Enable Navigator Files</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.navigator_avatar_image" class="form-check-input" id="HTTPCompressionSubsystems.navigator_avatar_image" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.navigator_files">Enable Navigator Avatar Image</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_inventory" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_inventory" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_inventory">Enable SSFW Get Inventory</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_selectables_trunks" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_selectables_trunks" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_selectables_trunks">Enable SSFW Get Selectables Trunks</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_save_data" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_save_data" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_save_data">Enable SSFW Get Selectables Trunks</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_scripted_save_data" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_scripted_save_data" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_scripted_save_data">Enable SSFW Get Scripted Save Data</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_apartment_layout" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_apartment_layout" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_apartment_layout">Enable SSFW Get Apartment Layout</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_club_details" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_club_details" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_club_details">Enable SSFW Get Club Details</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.ssfw_get_layout" class="form-check-input" id="HTTPCompressionSubsystems.ssfw_get_layout" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.ssfw_get_layout">Enable SSFW Get Layout</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.scene_xml" class="form-check-input" id="HTTPCompressionSubsystems.scene_xml" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.scene_xml">Enable Scene XML</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.scene_description" class="form-check-input" id="HTTPCompressionSubsystems.scene_description" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.scene_description">Enable Scene Description</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.scene_archive" class="form-check-input" id="HTTPCompressionSubsystems.scene_archive" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.scene_archive">Enable Scene Archive</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.object_description" class="form-check-input" id="HTTPCompressionSubsystems.object_description" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.object_description">Enable Object Description</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.object_archive" class="form-check-input" id="HTTPCompressionSubsystems.object_archive" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.object_archive">Enable Object Archive</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.commerce_point_xml" class="form-check-input" id="HTTPCompressionSubsystems.commerce_point_xml" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.commerce_point_xml">Enable Commerce Point XML</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.screen_file" class="form-check-input" id="HTTPCompressionSubsystems.screen_file" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.screen_file">Enable Screen File</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.screen_content_audio" class="form-check-input" id="HTTPCompressionSubsystems.screen_content_audio" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.screen_content_audio">Enable Screen Content Audio</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.screen_content_image" class="form-check-input" id="HTTPCompressionSubsystems.screen_content_image" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.screen_content_image">Enable Screen Content Image</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.screen_content_video" class="form-check-input" id="HTTPCompressionSubsystems.screen_content_video" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.screen_content_video">Enable Screen Content Video</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.menuscreen_help" class="form-check-input" id="HTTPCompressionSubsystems.menuscreen_help" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.menuscreen_help">Enable MenuScreen Help</label>
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="HTTPCompressionSubsystems.http_image" class="form-check-input" id="HTTPCompressionSubsystems.http_image" />
+            <label class="form-check-label" for="HTTPCompressionSubsystems.http_image">Enable HTTP Image</label>
+        </div>
+    </div>
+
+
+
+    <h3>Save Options</h3>
+    <div class="form-group row">
+        <div class="col-20">
+            <div class="form-check">
+                <div class="col-sm-6">
+                    <input asp-for="IsRetail" class="form-check-input" id="isRetail" />
+                    <label class="form-check-label" for="isRetail">Create Retail XML</label>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="IncludeEnvironmentClosed" class="form-check-input" id="includeEnvironmentClosed" />
+                    <label class="form-check-label" for="includeEnvironmentClosed">Enable Maintenance</label>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="EnableHTTPDeflateCompression" class="form-check-input" id="EnableHTTPDeflateCompression" />
+                    <label class="form-check-label" for="EnableHTTPDeflateCompression">Enable HTTP Deflate Compression</label>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="disableBarSupport" class="form-check-input" id="disableBarSupport" />
+                    <label class="form-check-label" for="disableBarSupport">Knight Mode</label>
+                </div>
+                <div class="col-sm-6">
+                    <input asp-for="UseRegionalServiceIds" class="form-check-input" id="UseRegionalServiceIds" />
+                    <label class="form-check-label" for="UseRegionalServiceIds">Enable Regional Service Ids</label>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-check-label" for="maxServiceIds">Max Service Ids</label>
+                    <input style="width: 75px" asp-for="maxServiceIds" class="form-control" id="maxServiceIds" placeholder="65" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-check-label" for="AdminObjectId">AdminObjectId</label>
+                    <input style="width: 375px" asp-for="AdminObjectId" class="form-control" id="AdminObjectId" placeholder="B0824A08-34054866-91573614-3D2DF37C" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Save to Regions</h3>
+    <div class="form-group">
+        <div class="row">
+            @foreach (var region in Model.AvailableRegions)
+            {
+                <div class="col-sm-3">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               name="SelectedRegions"
+                               value="@region"
+                               id="region_@region"
+                        @(Model.SelectedRegions.Contains(region) ? "checked" : "") />
+                        <label class="form-check-label" for="region_@region">@region</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary">Save Configuration</button>
+        </div>
+    </div>
+</form>

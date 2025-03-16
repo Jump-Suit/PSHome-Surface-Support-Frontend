@@ -54,6 +54,7 @@
             SecurityErrorObjectDescription = 990002, // 0xF1B32
             SecurityErrorSceneArchive = 990003, // 0xF1B33
             SecurityErrorSceneDescription = 990004, // 0xF1B34
+            //SecurityErrorDNSCheck = 99005 ?
             OnNetworkError = 990099,                   // 0xF1B93
         }
     }

@@ -3,36 +3,82 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PSHome_Surface_Support_Frontend</title>
+    <title>@ViewData["Title"] - HDS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PSHome_Surface_Support_Frontend.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HDS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        /* Custom styling for the navigator sidebar */
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .sidebar-item {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-separator {
+            height: 1px;
+            background-color: #dee2e6;
+            margin: 10px 0;
+        }
+
+        .logo-img {
+            position: relative;
+            left: -325px;
+        }
+
+        ._LoginPartialInput {
+            margin-right: -300px;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">PSHome_Surface_Support_Frontend</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">PSHome Surface Support Frontend</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Queue/Index">DataCapture Analysis</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </nav>
     </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 sidebar">
+                <!-- Navigator sidebar -->
+                <h4>Navigator</h4>
+                <ul class="nav flex-column">
+                    <hr class="sidebar-separator" />
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Options">Options</a>
+                            </li>
+                            <hr class="sidebar-separator" />
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/SCE/TSS/ConfigEditor">TSS Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Queue/Index">DataCapture Analysis</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Capone/Index">Grief Reports</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </ul>
+            </nav>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
