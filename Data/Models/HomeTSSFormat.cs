@@ -20,7 +20,6 @@
         public Connection Connection { get; set; }
         public SSFWConnection SSFWConnection { get; set; }
         public GlobalConfig Global { get; set; }
-        //public Dictionary<GlobalTypes, GlobalRegionList> globalRegionValueList = new Dictionary<GlobalTypes, GlobalRegionList>();
         public RegionInfo RegionInfo { get; set; }
     }
 
