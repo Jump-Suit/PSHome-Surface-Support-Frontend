@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PSHome_Surface_Support_Frontend.Data.Services;
+using PSHome_Surface_Support_Frontend.Infastructure.Services;
 using PSHome_Surface_Support_Frontend.Infastructure.Data.Models;
 
 namespace PSHome_Surface_Support_Frontend.Pages.SCE.TSS
@@ -15,7 +15,7 @@ namespace PSHome_Surface_Support_Frontend.Pages.SCE.TSS
         }
 
         [BindProperty]
-        public Configuration Config { get; set; }
+        public TSSConfiguration Config { get; set; }
         [BindProperty]
         public bool IsRetail { get; set; } 
         [BindProperty]
@@ -59,7 +59,7 @@ namespace PSHome_Surface_Support_Frontend.Pages.SCE.TSS
 
         public void OnGet()
         {
-            Config = _xmlService.LoadConfiguration(_xmlService);
+            Config = _xmlService.LoadTSSConfiguration(_xmlService);
         }
 
         public IActionResult OnPost()
@@ -69,7 +69,7 @@ namespace PSHome_Surface_Support_Frontend.Pages.SCE.TSS
             //    return Page();
             //}
 
-            Task<List<string>> result = _xmlService.SaveConfiguration(Config, 
+            Task<List<string>> result = _xmlService.SaveTSSConfiguration(Config, 
                 SelectedRegions, 
                 IsRetail, 
                 IncludeEnvironmentClosed,

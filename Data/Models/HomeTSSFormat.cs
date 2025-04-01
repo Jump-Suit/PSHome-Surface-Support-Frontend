@@ -2,11 +2,65 @@
 {
     public class HomeTSSFormat
     {
+        public List<string> regionTerritories { get; set; } = new List<string>
+        {
+            "scea",
+            "scee",
+            "scej",
+            "sceasia",
+        };
 
+        public List<string> AvailableRegions { get; set; } = new List<string>
+        {
+            "en-US",    // SCEA
+            "en-GB",    // SCEE
+            "fr-FR",    // SCEE
+            "de-DE",    // SCEE
+            "es-ES",    // SCEE
+            "it-IT",    // SCEE
+            "ja-JP",    // SCEJ
+            "ko-KR",    // SCEAsia
+            "zh-TW",    // SCEAsia
+            "zh-HK",    // SCEAsia
+            "en-SG"     // SCEAsia
+        };
+
+
+
+        public List<string> AvailableSCEERegions { get; set; } = new List<string>
+        {
+            "en-GB",    // SCEE
+            "fr-FR",    // SCEE
+            "de-DE",    // SCEE
+            "es-ES",    // SCEE
+            "it-IT",    // SCEE
+        };
+
+        public List<string> AvailableSCEAsiaRegions { get; set; } = new List<string>
+        {
+            "ko-KR",    // SCEAsia
+            "zh-TW",    // SCEAsia
+            "zh-HK",    // SCEAsia
+            "en-SG"     // SCEAsia
+        };
+
+
+        public List<string> userTypes { get; set; } = new List<string> {
+            "new",
+            "regular",
+            "returning"
+        };
+
+        public List<string> localeRegions { get; set; } = new List<string> {
+            "A",
+            "E",
+            "J",
+            "H"
+        };
 
     }
 
-    public class Configuration
+    public class TSSConfiguration
     {
         public DateTime Version { get; set; } = new DateTime();
         public string SecureContentRoot { get; set; }
@@ -20,6 +74,7 @@
         public Connection Connection { get; set; }
         public SSFWConnection SSFWConnection { get; set; }
         public GlobalConfig Global { get; set; }
+        //public Dictionary<GlobalTypes, GlobalRegionList> globalRegionValueList = new Dictionary<GlobalTypes, GlobalRegionList>();
         public RegionInfo RegionInfo { get; set; }
     }
 
@@ -165,5 +220,8 @@
         DisableCrossRegionGroupFeatures = 24,
         ProtocolOverride = 25
     }
+
+
+
 
 }

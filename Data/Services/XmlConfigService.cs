@@ -1,39 +1,146 @@
-﻿using PSHome_Surface_Support_Frontend.Infastructure.Data.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PSHome_Surface_Support_Frontend.Infastructure.Data.Models;
 using PSHome_Surface_Support_Frontend.Pages.SCE.TSS;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace PSHome_Surface_Support_Frontend.Data.Services
+namespace PSHome_Surface_Support_Frontend.Infastructure.Services
 {
     public class XmlConfigService
     {
-        private readonly string _basePath;
+        private readonly string _baseTSSPath;
+        private readonly string _baseSecureObjectRootPath;
+
+        [BindProperty]
+        public string motdTemplate { get; set; }
 
         public XmlConfigService(IWebHostEnvironment env)
         {
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "tss");
-            _basePath = directoryPath;
+            string directoryTSSPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "tss");
+            string directorySecureObjectRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "objects");
+
+            _baseTSSPath = directoryTSSPath;
+            _baseSecureObjectRootPath = directorySecureObjectRootPath;
         }
 
-        public Configuration LoadConfiguration(XmlConfigService _xmlService)
+        public string LoadMotd(XmlConfigService _xmlService)
+        {
+            HomeTSSFormat tSSFormat = new HomeTSSFormat();
+            string motdPath = string.Empty;
+            string motdContent = string.Empty;
+
+            string[]? dirList = null;
+            foreach (var userType in tSSFormat.userTypes)
+            {
+                foreach (var localeRegion in tSSFormat.localeRegions)
+                {
+                    //$"message_{userType}_{regionTerr}_{availableRegion}.txt"
+                    //motdPath = Path.Combine($"{_baseSecureObjectRootPath}/F14C0D58-A3934173-99C50269-84DCB78C/{userType}/{localeRegion}", $"message_new_SCEA_en-US.txt");
+
+                    try
+                    {
+                        dirList = Directory.GetFiles($"wwwroot/assets/Templates", "*.txt");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"EX: {ex.Message}");
+                    }
+
+                }
+
+
+            }
+
+            var filePath = dirList.FirstOrDefault(); //x => x.Contains("/regular/A")
+            motdContent = File.ReadAllText(filePath);
+
+            return motdContent;
+        }
+
+        public Task<string> SaveMotdTxt(string motdTxt,
+            List<string> selectedRegions, List<string> selectedRegionTerritories)
+        {
+
+            HomeTSSFormat tSSFormat = new HomeTSSFormat();
+            string motdPath = string.Empty;
+            string motdContent = string.Empty;
+
+            string motdFileName = string.Empty;
+            string motdFilePath = string.Empty;
+
+            foreach (var userType in tSSFormat.userTypes)
+            {
+                foreach (var selectedReg in selectedRegions)
+                {
+                    foreach (var localeRegion in tSSFormat.localeRegions)
+                    {
+                        foreach (var selectedRegTerr in selectedRegionTerritories)
+                        {
+                            motdFileName = $"message_{userType}_{selectedRegTerr}_{selectedReg}.txt";
+                            motdFilePath = $"{_baseSecureObjectRootPath}/F14C0D58-A3934173-99C50269-84DCB78C/{userType}/{localeRegion}";
+                            Directory.CreateDirectory(motdFilePath);
+
+                            //Japan
+                            if (selectedRegTerr == "SCEJ" && selectedReg == "ja-JP" && localeRegion == "J")
+                            {
+                                motdPath = Path.Combine(motdFilePath, motdFileName);
+                                File.WriteAllText(motdPath, motdTxt);
+                                Console.WriteLine($"Written MOTD to {motdPath}");
+                            }
+                            //America
+                            else if (selectedRegTerr == "SCEA" && selectedReg == "en-US" && localeRegion == "A")
+                            {
+                                motdPath = Path.Combine(motdFilePath, motdFileName);
+                                File.WriteAllText(motdPath, motdTxt);
+                                Console.WriteLine($"Written MOTD to {motdPath}");
+                            }
+                            //Europe
+                            else if (selectedRegTerr == "SCEE" && tSSFormat.AvailableSCEERegions.Contains(selectedReg) && localeRegion == "E")
+                            {
+                                motdPath = Path.Combine(motdFilePath, motdFileName);
+                                File.WriteAllText(motdPath, motdTxt);
+                                Console.WriteLine($"Written MOTD to {motdPath}");
+                            }
+                            //Asia
+                            else if (selectedRegTerr == "SCEAsia" && tSSFormat.AvailableSCEAsiaRegions.Contains(selectedReg) && localeRegion == "H")
+                            {
+                                motdPath = Path.Combine(motdFilePath, motdFileName);
+                                File.WriteAllText(motdPath, motdTxt);
+                                Console.WriteLine($"Written MOTD to {motdPath}");
+                            }
+
+                        }
+                    }
+
+                }
+
+
+            }
+
+            return Task.FromResult("TEMP TO ADD");
+        }
+
+        public TSSConfiguration LoadTSSConfiguration(XmlConfigService _xmlService)
         {
             ConfigEditor configEditor = new ConfigEditor(_xmlService);
+            HomeTSSFormat homeTSSFormat = new HomeTSSFormat();
 
             XDocument doc = new XDocument();
 
 
-            var files = Directory.GetFiles(_basePath, "*.xml", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(_baseTSSPath, "*.xml", SearchOption.AllDirectories);
 
-            foreach (var region in configEditor.AvailableRegions)
+            foreach (var region in homeTSSFormat.AvailableRegions)
             {
-                string filePath = Path.Combine(_basePath, $"template0001_{region}.xml");
+                string filePath = Path.Combine(_baseTSSPath, $"clientconfig0001_{region}.xml");
 
-                foreach (var file in files) {
+                foreach (var file in files)
+                {
 
                     if (file.Split("/").Last().Contains(region))
                     {
                         doc = XDocument.Load(filePath);
-                        return ParseConfiguration(doc);
+                        return ParseTSSConfiguration(doc);
                     }
                     else
                     {
@@ -45,10 +152,10 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             return null;
         }
 
-        public Task<List<string>> SaveConfiguration(Configuration config, 
-            List<string> regions, 
-            bool isRetail, 
-            bool includeEnvironmentClosed, 
+        public Task<List<string>> SaveTSSConfiguration(TSSConfiguration config,
+            List<string> regions,
+            bool isRetail,
+            bool includeEnvironmentClosed,
             bool disableBarSupport,
             bool enableHttpGZipCompression,
             bool enableHttpDeflateCompression,
@@ -63,8 +170,8 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             Task<List<string>> result = null;
             foreach (var region in regions)
             {
-                string filePath = Path.Combine(_basePath, isRetail ? $"coreHztFmpQrx0002_{region}.xml" : $"clientconfig0001_{region}.xml");
-                result = SaveToXml(config, filePath, region, includeEnvironmentClosed, 
+                string filePath = Path.Combine(_baseTSSPath, isRetail ? $"coreHztFmpQrx0002_{region}.xml" : $"clientconfig0001_{region}.xml");
+                result = SaveToXml(config, filePath, region, includeEnvironmentClosed,
                     disableBarSupport, enableHttpGZipCompression, enableHttpDeflateCompression,
                     enableSecureCommercePoints, useRegionalServiceIds, maxServiceIds,
                     AdminObjectId, httpCompressionSubsystems, override182Sharc);
@@ -72,9 +179,9 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             return result;
         }
 
-        private Configuration ParseConfiguration(XDocument doc)
+        private TSSConfiguration ParseTSSConfiguration(XDocument doc)
         {
-            var config = new Configuration
+            var config = new TSSConfiguration
             {
                 Version = DateTime.Parse(doc.Root.Element("VERSION")?.Value),
                 SecureContentRoot = doc.Root.Element("SecureContentRoot")?.Value,
@@ -86,7 +193,7 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             //DataCapture Service
             // Parse Region Info
             var datacapture = doc.Root.Element("datacapture");
-            if(datacapture != null)
+            if (datacapture != null)
             {
                 config.DataCaptureService = new DataCapture
                 {
@@ -94,7 +201,7 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
                     modeToEdit = int.Parse(datacapture.Element("url")?.Attribute("mode")?.Value),
                 };
             }
-               
+
             // Parse SHA1 files
             config.Sha1Files = doc.Root.Elements("SHA1")
                 .Select(x => new Sha1File
@@ -199,9 +306,9 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             return config;
         }
 
-        private Task<List<string>> SaveToXml(Configuration config, 
-            string filePath, string region, 
-            bool includeEnvironmentClosed, 
+        private Task<List<string>> SaveToXml(TSSConfiguration config,
+            string filePath, string region,
+            bool includeEnvironmentClosed,
             bool disableBarSupport,
             bool enableHttpGZipCompression,
             bool enableHttpDeflateompression,
@@ -248,7 +355,7 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
                             new XAttribute("digest", f.Digest)
                             )
                         ),
-                        new XElement("profanityfilter", 
+                        new XElement("profanityfilter",
                             new XAttribute("apikey", "6b77c0b1-4636-4942-b08c-c4ee126b82ae"),
                             new XAttribute("forceOffline", "true"),
                             new XAttribute("privateKey", "NVluu9dWima10JIUKhCVvg=="),
@@ -261,8 +368,8 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
                             )
                         ),
                         new XComment("DNS Overrides.  Maximum 30 entries"),
-                        new XElement("DNSOverride", 
-                            new XAttribute("action", "allow"), 
+                        new XElement("DNSOverride",
+                            new XAttribute("action", "allow"),
                             new XAttribute("report", "on"),
                             new XAttribute("clearcache", "off"),
                             "0.0.0.0/0"
@@ -276,18 +383,23 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
                 string encoding = string.Empty;
 
                 bool error = false;
-                if (enableHttpGZipCompression == true 
-                    && enableHttpDeflateompression == false) {
+                if (enableHttpGZipCompression == true
+                    && enableHttpDeflateompression == false)
+                {
                     encoding = "gzip";
-                } else if (enableHttpGZipCompression == false 
-                    && enableHttpDeflateompression == true) {
+                }
+                else if (enableHttpGZipCompression == false
+                    && enableHttpDeflateompression == true)
+                {
                     encoding = "deflate";
-                } else {
+                }
+                else
+                {
                     codes.Add("ERROR: ATTEMPTED TO ENABLE MULTIPLE ENCODINGS NOT SUPPORTED)");
                     error = true;
                 }
 
-                if(error == false)
+                if (error == false)
                 {
                     http_compression_node.Add(new XAttribute("encodings", encoding));
                     if (httpCompressionSubsystems.object_catalogue)
@@ -348,14 +460,18 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             }
 
             #region AdminObjectId
-            if(AdminObjectId != null)
+            if (AdminObjectId != null)
             {
-                if(Regex.IsMatch(AdminObjectId, @"^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}$")) {
+                if (Regex.IsMatch(AdminObjectId, @"^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}-[0-9A-Fa-f]{8}$"))
+                {
                     root.Add(new XElement("AdminObjectId", AdminObjectId));
-                } else {
+                }
+                else
+                {
                     codes.Add("ERROR: Invalid Object ID");
                 }
-            } else
+            }
+            else
             {
                 codes.Add("WARN: No admin object ID specified, admin functionality unavailable");
             }
@@ -373,7 +489,8 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             #endregion
 
             #region secure_commerce_points
-            if (enableSecureCommercePoints) {
+            if (enableSecureCommercePoints)
+            {
 
                 root.Add(
                     new XElement("commerce",
@@ -385,11 +502,12 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
 
             #region Connection
             string contentServerKey = string.Empty;
-            if(override182Sharc)
+            if (override182Sharc)
             {
                 //Server Connection 1.82
                 contentServerKey = "8243a3b10f1f1660a7fc934aac263c9c5161092dc25=";
-            } else
+            }
+            else
             {
                 //Server Connection 1.83+
                 contentServerKey = "8b9qT7u6XQ7Sf0GKSIivMEeG7NROLTZGgNtN8iI6n1Y=";
@@ -416,7 +534,7 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             #endregion
 
             root.Add(
-                        
+
                         new XComment(@"<messageQueue>
     <connect address=""prod.homemq.online.scee.com"" port=""10086"" login=""prod"" password=""monkeyface"" vhost=""cprod"" isCritical=""false"" />
     <client>/exchange/exchange.client/pshome.client.$(user)</client>
@@ -508,7 +626,7 @@ namespace PSHome_Surface_Support_Frontend.Data.Services
             var doc = new XDocument(
                 root
             );
-;
+            ;
             var docFormatted = XDocument.Parse(doc.ToString());
             docFormatted.Save(filePath, SaveOptions.None);
             return Task.FromResult(codes);

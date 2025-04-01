@@ -1,0 +1,92 @@
+﻿@page
+@inject PSHome_Surface_Support_Frontend.Infastructure.Data.Models.HomeTSSFormat homeTSSFormat
+@model PSHome_Surface_Support_Frontend.Pages.SCE.SecureContents.MessageOfTheDayModel
+@{
+    ViewData["Title"] = "Message Of The Day Editor";
+}
+
+
+<h1>Message of the Day Editor</h1>
+<div>
+    <hr class="sidebar-separator" />
+    <form method="post">
+        <div class="form-group">
+            <label for="announcementText">MOTD:</label>
+            <textarea asp-for="motdContent"
+                      class="form-control"
+                      rows="25"
+                      cols="55"
+                      placeholder="Enter your announcement here..."></textarea>
+            <span asp-validation-for="motdContent" class="text-danger"></span>
+        </div>
+
+
+        <h3>Select Territories</h3>
+        <div class="form-group">
+            <div class="row">
+                @foreach (var territory in homeTSSFormat.regionTerritories)
+                {
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   name="SelectedTerritories"
+                                   value="@territory"
+                                   id="territory_@territory"
+                            @(Model.SelectedTerritories.Contains(territory) ? "checked" : "") />
+                            <label class="form-check-label" for="territory_@territory">@territory</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+
+        <h3>Select User Types</h3>
+        <div class="form-group">
+            <div class="row">
+                @foreach (var userType in homeTSSFormat.userTypes)
+                {
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   name="SelectedUserTypes"
+                                   value="@userType"
+                                   id="usertype_@userType"
+                            @(Model.SelectedUserTypes.Contains(userType) ? "checked" : "") />
+                            <label class="form-check-label" for="usertype_@userType">@userType</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <h3>Select Regions</h3>
+        <div class="form-group">
+            <div class="row">
+                @foreach (var region in homeTSSFormat.AvailableRegions)
+                {
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   name="SelectedRegions"
+                                   value="@region"
+                                   id="region_@region"
+                            @(Model.SelectedRegions.Contains(region) ? "checked" : "") />
+                            <label class="form-check-label" for="region_@region">@region</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
